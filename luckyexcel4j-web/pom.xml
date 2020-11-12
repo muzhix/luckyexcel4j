@@ -11,5 +11,17 @@
 
     <artifactId>luckyexcel4j-web</artifactId>
 
+    <properties>
+        <luckyexcel4j.version>1.0-SNAPSHOT</luckyexcel4j.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.hanbd</groupId>
+            <artifactId>luckyexcel4j-core</artifactId>
+            <version>${luckyexcel4j.version}</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
