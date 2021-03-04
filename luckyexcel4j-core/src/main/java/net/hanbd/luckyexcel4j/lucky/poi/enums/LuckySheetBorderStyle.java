@@ -2,9 +2,7 @@ package net.hanbd.luckyexcel4j.lucky.poi.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.hanbd.luckyexcel4j.lucky.poi.base.LuckySheetBorder;
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.xwpf.usermodel.Borders;
 
 /**
  * 边框线格式

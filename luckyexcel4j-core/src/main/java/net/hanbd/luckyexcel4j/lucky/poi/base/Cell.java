@@ -24,7 +24,7 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCell;
  */
 @Data
 @AllArgsConstructor
-public class LuckySheetCell {
+public class Cell {
     /**
      * 行index
      */
@@ -39,16 +39,16 @@ public class LuckySheetCell {
      * 单元格值
      */
     @JsonProperty("v")
-    private LuckySheetCellValue value;
+    private CellValue value;
 
     @JsonIgnore
     private final XSSFCell cell;
     private final CTCell ctCell;
     private final XSSFWorkbook workbook;
     @JsonIgnore
-    private LuckySheetBorder border;
+    private Border border;
 
-    public LuckySheetCell(XSSFCell cell) {
+    public Cell(XSSFCell cell) {
         this.cell = cell;
         this.ctCell = cell.getCTCell();
         this.workbook = cell.getSheet().getWorkbook();
@@ -58,9 +58,9 @@ public class LuckySheetCell {
         this.value = generateValue();
     }
 
-    private LuckySheetCellValue generateValue() {
+    private CellValue generateValue() {
         SharedStringsTable sst = workbook.getSharedStringSource();
-        LuckySheetCellValue cellValue = new LuckySheetCellValue();
+        CellValue cellValue = new CellValue();
 
         /*
          * style
@@ -68,7 +68,7 @@ public class LuckySheetCell {
 
         XSSFCellStyle cellStyle = cell.getCellStyle();
 
-        LuckySheetCellFormat lsCellFormat = LuckySheetCellFormat.builder()
+        CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
                 .type(LuckySheetCellFormatType.of(cell.getCellType())).build();
         cellValue.setValue(cell.getRawValue());
@@ -116,8 +116,8 @@ public class LuckySheetCell {
 
         // border
         if (cellStyle.getCoreXf().getApplyBorder()) {
-            border = new LuckySheetBorder(BorderRangeType.CELL);
-            LuckySheetBorder.Value borderValue = border.getValue();
+            border = new Border(BorderRangeType.CELL);
+            Border.Value borderValue = border.getValue();
             borderValue.setRow(this.row);
             borderValue.setCol(this.column);
 
@@ -151,9 +151,9 @@ public class LuckySheetCell {
         return cellValue;
     }
 
-    private LuckySheetBorder.Style genBorderStyle(XSSFCellStyle cellStyle, BorderStyle borderStyle,
-                                                  XSSFCellBorder.BorderSide borderSide) {
-        return LuckySheetBorder.Style.builder()
+    private Border.Style genBorderStyle(XSSFCellStyle cellStyle, BorderStyle borderStyle,
+                                        XSSFCellBorder.BorderSide borderSide) {
+        return Border.Style.builder()
                 .style(LuckySheetBorderStyle.valueOf(borderStyle).getStyle())
                 .color(cellStyle.getBorderColor(borderSide).getARGBHex()).build();
     }

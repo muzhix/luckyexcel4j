@@ -5,5 +5,5 @@ package net.hanbd.luckyexcel4j.lucky.poi.base;
  *
  * @author hanbd
  */
-public class LuckySheetPivotTable {
+public class SheetPivotTable {
 }

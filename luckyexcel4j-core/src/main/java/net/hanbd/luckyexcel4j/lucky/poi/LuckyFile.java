@@ -1,9 +1,9 @@
 package net.hanbd.luckyexcel4j.lucky.poi;
 
 import lombok.Getter;
-import net.hanbd.luckyexcel4j.lucky.poi.base.LuckyFileBase;
-import net.hanbd.luckyexcel4j.lucky.poi.base.LuckyFileInfo;
-import net.hanbd.luckyexcel4j.lucky.poi.base.LuckySheetBase;
+import net.hanbd.luckyexcel4j.lucky.poi.base.FileMeta;
+import net.hanbd.luckyexcel4j.lucky.poi.base.ExcelFileInfo;
+import net.hanbd.luckyexcel4j.lucky.poi.base.SheetMeta;
 import net.hanbd.luckyexcel4j.utils.DateUtil;
 import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
 import org.apache.poi.ooxml.POIXMLProperties.ExtendedProperties;
@@ -40,12 +40,12 @@ public class LuckyFile {
     }
 
     /**
-     * xlsx file -> {@link LuckyFileBase}
+     * xlsx file -> {@link FileMeta}
      *
      * @return LuckyFileBase 用于前端渲染luckysheet表格
      */
-    public LuckyFileBase parse() {
-        return LuckyFileBase.builder().info(this.getWorkbookInfo()).sheets(this.getSheets()).build();
+    public FileMeta parse() {
+        return FileMeta.builder().info(this.getWorkbookInfo()).sheets(this.getSheets()).build();
     }
 
     /**
@@ -53,10 +53,10 @@ public class LuckyFile {
      *
      * @return
      */
-    private LuckyFileInfo getWorkbookInfo() {
+    private ExcelFileInfo getWorkbookInfo() {
         CoreProperties coreProperties = excel.getProperties().getCoreProperties();
         ExtendedProperties extProperties = excel.getProperties().getExtendedProperties();
-        return LuckyFileInfo.builder()
+        return ExcelFileInfo.builder()
                 .name(file.getName())
                 .appVersion(extProperties.getAppVersion())
                 .company(extProperties.getCompany())
@@ -67,14 +67,14 @@ public class LuckyFile {
                 .build();
     }
 
-    private List<LuckySheetBase> getSheets() {
+    private List<SheetMeta> getSheets() {
         int sheetNumbers = this.excel.getNumberOfSheets();
 
-        List<LuckySheetBase> sheets = new ArrayList<>(sheetNumbers);
+        List<SheetMeta> sheets = new ArrayList<>(sheetNumbers);
         for (int i = 0; i < sheetNumbers; i++) {
             XSSFSheet sheet = this.excel.getSheetAt(i);
             LuckySheet luckySheet = new LuckySheet(sheet);
-            sheets.add(luckySheet.getSheetBase());
+            sheets.add(luckySheet.getSheetMeta());
         }
 
         return sheets;

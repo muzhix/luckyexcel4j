@@ -8,7 +8,7 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetView;
 import java.util.List;
 
 /**
- * Luckysheet 工作表
+ * Luckysheet 工作表初始化配置信息
  *
  * @author hanbd
  * @see <a
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class LuckySheetBase {
+public class SheetMeta {
     /**
      * 工作表名称
      */
@@ -47,12 +47,12 @@ public class LuckySheetBase {
      */
     protected Integer column;
 
-    protected LuckySheetConfig config;
+    protected SheetConfig config;
     /**
      * 选中的区域(支持多选)
      */
     @JsonProperty("luckysheet_select_save")
-    protected List<LuckySheetSelection> luckySheetSelectSave;
+    protected List<Selection> luckySheetSelectSave;
     /**
      * 左右滚动条位置
      */
@@ -65,12 +65,12 @@ public class LuckySheetBase {
      * 初始化使用的单元格数据
      */
     @JsonProperty("celldata")
-    protected List<LuckySheetCell> cellData;
+    protected List<Cell> cellData;
 
     /**
      * 图表
      */
-    protected List<LuckySheetChart> chart;
+    protected List<SheetChart> sheetChart;
     /**
      * 是否数据透视表
      */
@@ -78,12 +78,12 @@ public class LuckySheetBase {
     /**
      * 数据透视表
      */
-    protected LuckySheetPivotTable pivotTable;
+    protected SheetPivotTable pivotTable;
 
     /**
      * 条件格式
      */
-    protected LuckySheetConditionFormat luckySheetConditionFormatSave;
+    protected ConditionFormat conditionFormatSave;
     /**
      * TODO 待确认具体类型
      */
@@ -115,5 +115,5 @@ public class LuckySheetBase {
     /**
      * 图片
      */
-    protected List<LuckySheetImage> image;
+    protected List<SheetImage> sheetImage;
 }

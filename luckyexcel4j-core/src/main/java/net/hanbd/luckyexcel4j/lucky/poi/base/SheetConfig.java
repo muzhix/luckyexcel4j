@@ -26,15 +26,15 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuckySheetConfig {
+public class SheetConfig {
     /**
      * 合并单元格信息
      */
-    private Map<String, LuckySheetMerge> merge;
+    private Map<String, MergeCell> merge;
     /**
      * 边框信息
      */
-    private List<LuckySheetBorder> borderInfo;
+    private List<Border> borderInfo;
     /**
      * 行高信息. key: row index, value: row height
      */

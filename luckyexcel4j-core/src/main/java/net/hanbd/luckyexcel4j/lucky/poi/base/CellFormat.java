@@ -20,7 +20,7 @@ import net.hanbd.luckyexcel4j.lucky.poi.enums.LuckySheetCellFormatType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LuckySheetCellFormat {
+public class CellFormat {
     /**
      * Format格式的定义字符串
      */

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 文件基本信息
+ * Excel文件基本信息
  *
  * @author hanbd
  */
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuckyFileInfo {
+public class ExcelFileInfo {
     /**
      * 文件名
      */
@@ -37,7 +37,9 @@ public class LuckyFileInfo {
      * 最新修改时间
      */
     private LocalDateTime modifiedTime;
-
+    /**
+     * 公司信息
+     */
     private String company;
     /**
      * excel version

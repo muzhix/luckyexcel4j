@@ -12,7 +12,7 @@ import java.util.List;
  * href="https://mengshukeji.gitee.io/LuckysheetDocs/zh/guide/sheet.html#luckysheet-conditionformat-save">
  * luckysheet-conditionformat-save</a>
  */
-public class LuckySheetConditionFormat {
+public class ConditionFormat {
     /**
      * 突出显示单元格规则和项目选区规则
      *
@@ -23,9 +23,9 @@ public class LuckySheetConditionFormat {
      * 条件应用范围
      */
     @JsonProperty("cellrange")
-    private LuckySheetSelection cellRange;
+    private Selection cellRange;
     /**
-     * 格式,根据不同的{@link LuckySheetConditionFormat#type},实际对象类型不同
+     * 格式,根据不同的{@link ConditionFormat#type},实际对象类型不同
      */
     private Object format;
     /**
@@ -39,7 +39,7 @@ public class LuckySheetConditionFormat {
      *
      * <p>Detailed settings,comparison range
      */
-    private List<LuckySheetSelection> conditionRange;
+    private List<Selection> conditionRange;
     /**
      * 条件值 TODO 具体类型待确认
      */

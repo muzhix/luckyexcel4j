@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.hanbd.luckyexcel4j.lucky.poi.base.*;
 import net.hanbd.luckyexcel4j.utils.PoiUtil;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -36,10 +35,10 @@ public class LuckySheet {
     private final CalculationChain calcChain;
 
     @Getter
-    private LuckySheetBase sheetBase;
+    private SheetMeta sheetMeta;
 
     public LuckySheet(XSSFSheet sheet) {
-        this.sheetBase = new LuckySheetBase();
+        this.sheetMeta = new SheetMeta();
 
         this.sheet = sheet;
         this.workbook = this.sheet.getWorkbook();
@@ -50,11 +49,11 @@ public class LuckySheet {
     }
 
     private void parse() {
-        sheetBase.setName(sheet.getSheetName());
-        sheetBase.setIndex(workbook.getSheetIndex(sheet));
-        sheetBase.setOrder(sheetBase.getIndex());
-        sheetBase.setConfig(new LuckySheetConfig());
-        sheetBase.setCellData(Lists.newArrayList());
+        sheetMeta.setName(sheet.getSheetName());
+        sheetMeta.setIndex(workbook.getSheetIndex(sheet));
+        sheetMeta.setOrder(sheetMeta.getIndex());
+        sheetMeta.setConfig(new SheetConfig());
+        sheetMeta.setCellData(Lists.newArrayList());
 
         resolveSheetView();
         resolveTabColor();
@@ -71,18 +70,18 @@ public class LuckySheet {
         }
         CTSheetView sheetView = sheetViews.getSheetViewArray(0);
 
-        this.sheetBase.setShowGridLines(sheetView.getShowGridLines() ? 1 : 0);
-        this.sheetBase.setStatus(sheetView.getTabSelected() ? 1 : 0);
-        this.sheetBase.setZoomRatio(getLongDefault(sheetView.getZoomScale(), 100L) / 100.0);
+        this.sheetMeta.setShowGridLines(sheetView.getShowGridLines() ? 1 : 0);
+        this.sheetMeta.setStatus(sheetView.getTabSelected() ? 1 : 0);
+        this.sheetMeta.setZoomRatio(getLongDefault(sheetView.getZoomScale(), 100L) / 100.0);
         CellAddress activeCell = sheet.getActiveCell();
-        LuckySheetSelection luckySheetSelection =
-                new LuckySheetSelection(sheetBase.getIndex(), activeCell.getRow(), activeCell.getColumn());
-        this.sheetBase.setLuckySheetSelectSave(Lists.newArrayList(luckySheetSelection));
+        Selection selection =
+                new Selection(sheetMeta.getIndex(), activeCell.getRow(), activeCell.getColumn());
+        this.sheetMeta.setLuckySheetSelectSave(Lists.newArrayList(selection));
     }
 
     private void resolveTabColor() {
         XSSFColor tabColor = sheet.getTabColor();
-        sheetBase.setColor(tabColor.getARGBHex());
+        sheetMeta.setColor(tabColor.getARGBHex());
     }
 
     /**
@@ -91,9 +90,9 @@ public class LuckySheet {
     private void resolveColWidthAndRowHeightAndAddCell() {
         // resolve default
         int defaultHeightPoint = getIntDefault((int) sheet.getDefaultRowHeight(), 19);
-        sheetBase.setDefaultColWidth(
+        sheetMeta.setDefaultColWidth(
                 PoiUtil.getColumnWidthPixel((double) sheet.getDefaultColumnWidth()));
-        sheetBase.setDefaultRowHeight(PoiUtil.getRowHeightPixel((double) defaultHeightPoint));
+        sheetMeta.setDefaultRowHeight(PoiUtil.getRowHeightPixel((double) defaultHeightPoint));
 
         // resolve cols
         List<CTCols> colsList = sheet.getCTWorksheet().getColsList();
@@ -109,23 +108,23 @@ public class LuckySheet {
                 for (int i = minNum; i <= maxNum; i++) {
                     // columnlen
                     if (Objects.nonNull(widthNum)) {
-                        if (Objects.isNull(sheetBase.getConfig().getColumnWidth())) {
-                            sheetBase.getConfig().setColumnWidth(Maps.newHashMap());
+                        if (Objects.isNull(sheetMeta.getConfig().getColumnWidth())) {
+                            sheetMeta.getConfig().setColumnWidth(Maps.newHashMap());
                         }
                         // 添加列宽
-                        sheetBase.getConfig().getColumnWidth().put(i, PoiUtil.getColumnWidthPixel(widthNum));
+                        sheetMeta.getConfig().getColumnWidth().put(i, PoiUtil.getColumnWidthPixel(widthNum));
                     }
 
                     // colhidden
                     if (hidden) {
-                        if (Objects.isNull(sheetBase.getConfig().getColumnHidden())) {
-                            sheetBase.getConfig().setColumnHidden(Maps.newHashMap());
+                        if (Objects.isNull(sheetMeta.getConfig().getColumnHidden())) {
+                            sheetMeta.getConfig().setColumnHidden(Maps.newHashMap());
                         }
                         // 隐藏列
-                        sheetBase.getConfig().getColumnHidden().put(i, 0);
+                        sheetMeta.getConfig().getColumnHidden().put(i, 0);
                         // 删除列宽
-                        if (Objects.nonNull(sheetBase.getConfig().getColumnWidth())) {
-                            sheetBase.getConfig().getColumnWidth().remove(i);
+                        if (Objects.nonNull(sheetMeta.getConfig().getColumnWidth())) {
+                            sheetMeta.getConfig().getColumnWidth().remove(i);
                         }
                     }
                 }
@@ -134,14 +133,14 @@ public class LuckySheet {
 
         // resolve rows and cells
         List<CTRow> rowList = sheet.getCTWorksheet().getSheetData().getRowList();
-        if (Objects.isNull(sheetBase.getConfig().getRowHeight())) {
-            sheetBase.getConfig().setRowHeight(Maps.newHashMap());
+        if (Objects.isNull(sheetMeta.getConfig().getRowHeight())) {
+            sheetMeta.getConfig().setRowHeight(Maps.newHashMap());
         }
-        if (Objects.isNull(sheetBase.getConfig().getRowHidden())) {
-            sheetBase.getConfig().setRowHidden(Maps.newHashMap());
+        if (Objects.isNull(sheetMeta.getConfig().getRowHidden())) {
+            sheetMeta.getConfig().setRowHidden(Maps.newHashMap());
         }
-        Map<Integer, Integer> rowHeightMap = sheetBase.getConfig().getRowHeight();
-        Map<Integer, Integer> rowHiddenMap = sheetBase.getConfig().getRowHidden();
+        Map<Integer, Integer> rowHeightMap = sheetMeta.getConfig().getRowHeight();
+        Map<Integer, Integer> rowHiddenMap = sheetMeta.getConfig().getRowHidden();
         for (Row row : sheet) {
             int rowNo = row.getRowNum();
             // rowlen
@@ -151,18 +150,18 @@ public class LuckySheet {
                 // 隐藏行
                 rowHiddenMap.put(rowNo, 0);
                 // 删除行高
-                sheetBase.getConfig().getRowHeight().remove(rowNo);
+                sheetMeta.getConfig().getRowHeight().remove(rowNo);
             }
             // cells
-            for (Cell cell : row) {
-                LuckySheetCell lsCell = new LuckySheetCell((XSSFCell) cell);
+            for (org.apache.poi.ss.usermodel.Cell cell : row) {
+                Cell lsCell = new Cell((XSSFCell) cell);
                 if (Objects.nonNull(lsCell.getBorder())) {
-                    if (Objects.isNull(this.sheetBase.getConfig().getBorderInfo())) {
-                        this.sheetBase.getConfig().setBorderInfo(Lists.newArrayList());
+                    if (Objects.isNull(this.sheetMeta.getConfig().getBorderInfo())) {
+                        this.sheetMeta.getConfig().setBorderInfo(Lists.newArrayList());
                     }
-                    this.sheetBase.getConfig().getBorderInfo().add(lsCell.getBorder());
+                    this.sheetMeta.getConfig().getBorderInfo().add(lsCell.getBorder());
                 }
-                this.sheetBase.getCellData().add(lsCell);
+                this.sheetMeta.getCellData().add(lsCell);
             }
         }
     }
@@ -171,13 +170,13 @@ public class LuckySheet {
      * 处理合并单元格
      */
     private void resolveMergeCells() {
-        if (Objects.isNull(sheetBase.getConfig().getMerge())) {
-            sheetBase.getConfig().setMerge(Maps.newHashMap());
+        if (Objects.isNull(sheetMeta.getConfig().getMerge())) {
+            sheetMeta.getConfig().setMerge(Maps.newHashMap());
         }
-        Map<String, LuckySheetMerge> mergeMap = sheetBase.getConfig().getMerge();
+        Map<String, MergeCell> mergeMap = sheetMeta.getConfig().getMerge();
         List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
         for (CellRangeAddress cellRange : mergedRegions) {
-            LuckySheetMerge merge = LuckySheetMerge.builder()
+            MergeCell merge = MergeCell.builder()
                     .startCol(cellRange.getFirstColumn())
                     .startRow(cellRange.getFirstRow())
                     .colsNum(cellRange.getLastColumn() - cellRange.getFirstColumn() + 1)

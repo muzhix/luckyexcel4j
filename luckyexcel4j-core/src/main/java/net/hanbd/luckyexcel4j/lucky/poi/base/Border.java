@@ -14,14 +14,14 @@ import net.hanbd.luckyexcel4j.lucky.poi.enums.LuckySheetBorderStyle;
  * borderInfo</a>
  */
 @Data
-public class LuckySheetBorder {
+public class Border {
     /**
      * {@link BorderRangeType#getType()}
      */
     private String rangeType;
     private Value value;
 
-    public LuckySheetBorder(BorderRangeType type) {
+    public Border(BorderRangeType type) {
         this.rangeType = type.getType();
         this.value = new Value();
     }

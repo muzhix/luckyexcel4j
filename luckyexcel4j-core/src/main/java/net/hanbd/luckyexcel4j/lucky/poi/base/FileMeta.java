@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @Builder
-public class LuckyFileBase {
-    private LuckyFileInfo info;
-    private List<LuckySheetBase> sheets;
+public class FileMeta {
+    private ExcelFileInfo info;
+    private List<SheetMeta> sheets;
 }

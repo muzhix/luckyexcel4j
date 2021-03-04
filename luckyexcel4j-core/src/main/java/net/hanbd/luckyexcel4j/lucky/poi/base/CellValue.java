@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LuckySheetCellValue {
+public class CellValue {
     /**
      * 单元格值格式
      */
     @JsonProperty("ct")
-    private LuckySheetCellFormat cellType;
+    private CellFormat cellType;
     /**
      * 背景颜色. eg: {@code #fff000}
      */
@@ -71,7 +71,7 @@ public class LuckySheetCellValue {
      * 合并单元格
      */
     @JsonProperty("mc")
-    private LuckySheetMerge mergeCell;
+    private MergeCell mergeCell;
     /**
      * 竖排文字
      *

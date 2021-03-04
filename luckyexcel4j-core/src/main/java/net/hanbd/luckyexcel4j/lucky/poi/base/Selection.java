@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LuckySheetSelection {
+public class Selection {
 
-    public LuckySheetSelection(Integer sheetIndex, Integer rowIndex, Integer columnIndex) {
+    public Selection(Integer sheetIndex, Integer rowIndex, Integer columnIndex) {
         this.sheetIndex = sheetIndex;
         this.row = new StartEndPair(rowIndex, rowIndex);
         this.column = new StartEndPair(columnIndex, columnIndex);

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LuckySheetMerge {
+public class MergeCell {
     /**
      * 合并单元格主单元格行号
      */

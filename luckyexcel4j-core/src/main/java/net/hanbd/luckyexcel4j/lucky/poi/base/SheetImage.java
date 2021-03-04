@@ -6,5 +6,5 @@ package net.hanbd.luckyexcel4j.lucky.poi.base;
  * @author hanbd
  * @see <a href="https://mengshukeji.gitee.io/LuckysheetDocs/zh/guide/sheet.html#image">image</a>
  */
-public class LuckySheetImage {
+public class SheetImage {
 }
