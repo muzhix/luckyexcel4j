@@ -1,8 +1,14 @@
 package net.hanbd.luckyexcel4j.lucky.poi.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.apache.poi.ss.usermodel.CellType;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 单元格值Type类型
@@ -15,7 +21,7 @@ import org.apache.poi.ss.usermodel.CellType;
  * </a>
  */
 @AllArgsConstructor
-public enum LuckySheetCellFormatType {
+public enum CellFormatType {
     /**
      * 自动格式
      */
@@ -33,10 +39,11 @@ public enum LuckySheetCellFormatType {
      */
     DATETIME("d");
 
-    @Getter
     private final String type;
+    private static final Map<String, CellFormatType> TYPES = Arrays.stream(CellFormatType.values())
+            .collect(Collectors.toMap(CellFormatType::getType, Function.identity()));
 
-    public static LuckySheetCellFormatType of(CellType cellType) {
+    public static CellFormatType of(CellType cellType) {
         switch (cellType) {
             case NUMERIC:
                 return NUMBER;
@@ -47,5 +54,15 @@ public enum LuckySheetCellFormatType {
                 return GENERAL;
 
         }
+    }
+
+    @JsonCreator
+    public static CellFormatType of(String type) {
+        return TYPES.get(type);
+    }
+
+    @JsonValue
+    public String getType() {
+        return type;
     }
 }

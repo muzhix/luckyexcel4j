@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * luckysheet 条件格式配置信息
+ * TODO
  *
  * @author hanbd
  * @see <a
@@ -23,7 +24,7 @@ public class ConditionFormat {
      * 条件应用范围
      */
     @JsonProperty("cellrange")
-    private Selection cellRange;
+    private Range cellRange;
     /**
      * 格式,根据不同的{@link ConditionFormat#type},实际对象类型不同
      */
@@ -39,7 +40,7 @@ public class ConditionFormat {
      *
      * <p>Detailed settings,comparison range
      */
-    private List<Selection> conditionRange;
+    private List<Range> conditionRange;
     /**
      * 条件值 TODO 具体类型待确认
      */

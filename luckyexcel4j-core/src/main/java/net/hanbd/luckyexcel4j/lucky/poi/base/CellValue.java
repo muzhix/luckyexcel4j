@@ -1,9 +1,15 @@
 package net.hanbd.luckyexcel4j.lucky.poi.base;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.CellHorizontalType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.CellVerticalType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.FontFamily;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.TextBreakType;
 
 /**
  * 单元格数据
@@ -15,6 +21,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CellValue {
     /**
@@ -23,7 +30,7 @@ public class CellValue {
     @JsonProperty("ct")
     private CellFormat cellType;
     /**
-     * 背景颜色. eg: {@code #fff000}
+     * 背景颜色Hex. eg: {@code #fff000}
      */
     @JsonProperty("bg")
     private String background;
@@ -31,42 +38,45 @@ public class CellValue {
      * 字体
      */
     @JsonProperty("ff")
-    private String fontFamily;
+    private FontFamily fontFamily;
     /**
      * 字体颜色. #fff000
      */
     @JsonProperty("fc")
     private String fontColor;
     /**
+     * 粗体.
+     */
+    @JsonProperty("bl")
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private Boolean bold;
+    /**
+     * 斜体.
+     */
+    @JsonProperty("it")
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private Boolean italic;
+    /**
      * 字体大小
      */
     @JsonProperty("fs")
     private Integer fontsize;
     /**
-     * 粗体. 0,常规; 1,加粗
-     */
-    @JsonProperty("bl")
-    private Integer bold;
-    /**
-     * 斜体. 0,常规; 1,斜体
-     */
-    @JsonProperty("it")
-    private Integer italic;
-    /**
-     * 删除线. 0,常规; 1,删除线
+     * 删除线.
      */
     @JsonProperty("cl")
-    private Integer cancelLine;
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private Boolean cancelLine;
     /**
      * 垂直对齐. 0,居中; 1,上; 2,下
      */
     @JsonProperty("vt")
-    private Integer verticalType;
+    private CellVerticalType verticalType;
     /**
      * 水平对齐. 0 居中、1 左、2右
      */
     @JsonProperty("ht")
-    private Integer horizontalType;
+    private CellHorizontalType horizontalType;
     /**
      * 合并单元格
      */
@@ -74,6 +84,7 @@ public class CellValue {
     private MergeCell mergeCell;
     /**
      * 竖排文字
+     * TODO 使用枚举
      *
      * <p>Text rotation,0: 0、1: 45 、2: -45、3 Vertical text、4: 90 、5: -90
      */
@@ -85,12 +96,12 @@ public class CellValue {
     @JsonProperty("rt")
     private Integer rotateText;
     /**
-     * 文本换行. 0 截断、1溢出、2 自动换行 TODO 优化为enum
+     * 文本换行. 0 截断、1溢出、2 自动换行
      */
     @JsonProperty("tb")
-    private Integer textBreak;
+    private TextBreakType textBreak;
     /**
-     * 原始值
+     * 原始值.可能为字符串类型,也可能为数字类型. TODO 优化处理
      */
     @JsonProperty("v")
     private String value;
@@ -100,10 +111,13 @@ public class CellValue {
     @JsonProperty("m")
     private String monitor;
     /**
-     * 公式
+     * 公式. eg: {@code "=SUM(233)" }
      */
     @JsonProperty("f")
     private String formula;
-
-    // TODO 支持批注
+    /**
+     * 批注
+     */
+    @JsonProperty("ps")
+    private Comment comment;
 }

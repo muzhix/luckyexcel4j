@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderRangeType;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.LuckySheetBorderStyle;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.LuckySheetCellFormatType;
-import org.apache.poi.ss.usermodel.BorderStyle;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyle;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.CellFormatType;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -15,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCell;
+
+import javax.validation.constraints.Min;
 
 /**
  * @author hanbd
@@ -29,11 +29,13 @@ public class Cell {
      * 行index
      */
     @JsonProperty("r")
+    @Min(0)
     private Integer row;
     /**
      * 列index
      */
     @JsonProperty("c")
+    @Min(0)
     private Integer column;
     /**
      * 单元格值
@@ -46,7 +48,7 @@ public class Cell {
     private final CTCell ctCell;
     private final XSSFWorkbook workbook;
     @JsonIgnore
-    private Border border;
+    private CellBorder cellBorder;
 
     public Cell(XSSFCell cell) {
         this.cell = cell;
@@ -70,7 +72,7 @@ public class Cell {
 
         CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
-                .type(LuckySheetCellFormatType.of(cell.getCellType())).build();
+                .type(CellFormatType.of(cell.getCellType())).build();
         cellValue.setValue(cell.getRawValue());
         cellValue.setCellType(lsCellFormat);
         cellValue.setBackground(cellStyle.getFillBackgroundColorColor().getARGBHex());
@@ -116,26 +118,26 @@ public class Cell {
 
         // border
         if (cellStyle.getCoreXf().getApplyBorder()) {
-            border = new Border(BorderRangeType.CELL);
-            Border.Value borderValue = border.getValue();
+            cellBorder = new CellBorder();
+            CellBorder.Value borderValue = cellBorder.getValue();
             borderValue.setRow(this.row);
             borderValue.setCol(this.column);
 
-            BorderStyle borderTop = cellStyle.getBorderTop();
-            BorderStyle borderBottom = cellStyle.getBorderBottom();
-            BorderStyle borderLeft = cellStyle.getBorderLeft();
-            BorderStyle borderRight = cellStyle.getBorderRight();
+            org.apache.poi.ss.usermodel.BorderStyle borderTop = cellStyle.getBorderTop();
+            org.apache.poi.ss.usermodel.BorderStyle borderBottom = cellStyle.getBorderBottom();
+            org.apache.poi.ss.usermodel.BorderStyle borderLeft = cellStyle.getBorderLeft();
+            org.apache.poi.ss.usermodel.BorderStyle borderRight = cellStyle.getBorderRight();
 
-            if (borderTop != BorderStyle.NONE) {
+            if (borderTop != org.apache.poi.ss.usermodel.BorderStyle.NONE) {
                 borderValue.setTop(genBorderStyle(cellStyle, borderTop, XSSFCellBorder.BorderSide.TOP));
             }
-            if (borderBottom != BorderStyle.NONE) {
+            if (borderBottom != org.apache.poi.ss.usermodel.BorderStyle.NONE) {
                 borderValue.setBottom(genBorderStyle(cellStyle, borderBottom, XSSFCellBorder.BorderSide.BOTTOM));
             }
-            if (borderLeft != BorderStyle.NONE) {
+            if (borderLeft != org.apache.poi.ss.usermodel.BorderStyle.NONE) {
                 borderValue.setLeft(genBorderStyle(cellStyle, borderLeft, XSSFCellBorder.BorderSide.LEFT));
             }
-            if (borderRight != BorderStyle.NONE) {
+            if (borderRight != org.apache.poi.ss.usermodel.BorderStyle.NONE) {
                 borderValue.setTop(genBorderStyle(cellStyle, borderRight, XSSFCellBorder.BorderSide.RIGHT));
             }
         }
@@ -151,10 +153,11 @@ public class Cell {
         return cellValue;
     }
 
-    private Border.Style genBorderStyle(XSSFCellStyle cellStyle, BorderStyle borderStyle,
-                                        XSSFCellBorder.BorderSide borderSide) {
-        return Border.Style.builder()
-                .style(LuckySheetBorderStyle.valueOf(borderStyle).getStyle())
+    private CellBorder.Style genBorderStyle(XSSFCellStyle cellStyle,
+                                            org.apache.poi.ss.usermodel.BorderStyle borderStyle,
+                                            XSSFCellBorder.BorderSide borderSide) {
+        return CellBorder.Style.builder()
+                .style(BorderStyle.valueOf(borderStyle).getStyle())
                 .color(cellStyle.getBorderColor(borderSide).getARGBHex()).build();
     }
 

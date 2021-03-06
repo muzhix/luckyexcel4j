@@ -74,9 +74,9 @@ public class LuckySheet {
         this.sheetMeta.setStatus(sheetView.getTabSelected() ? 1 : 0);
         this.sheetMeta.setZoomRatio(getLongDefault(sheetView.getZoomScale(), 100L) / 100.0);
         CellAddress activeCell = sheet.getActiveCell();
-        Selection selection =
-                new Selection(sheetMeta.getIndex(), activeCell.getRow(), activeCell.getColumn());
-        this.sheetMeta.setLuckySheetSelectSave(Lists.newArrayList(selection));
+        Range range =
+                new Range(activeCell.getRow(), activeCell.getColumn());
+        this.sheetMeta.setSelectRangesSave(Lists.newArrayList(range));
     }
 
     private void resolveTabColor() {
@@ -155,11 +155,11 @@ public class LuckySheet {
             // cells
             for (org.apache.poi.ss.usermodel.Cell cell : row) {
                 Cell lsCell = new Cell((XSSFCell) cell);
-                if (Objects.nonNull(lsCell.getBorder())) {
+                if (Objects.nonNull(lsCell.getCellBorder())) {
                     if (Objects.isNull(this.sheetMeta.getConfig().getBorderInfo())) {
                         this.sheetMeta.getConfig().setBorderInfo(Lists.newArrayList());
                     }
-                    this.sheetMeta.getConfig().getBorderInfo().add(lsCell.getBorder());
+                    this.sheetMeta.getConfig().getBorderInfo().add(lsCell.getCellBorder());
                 }
                 this.sheetMeta.getCellData().add(lsCell);
             }
