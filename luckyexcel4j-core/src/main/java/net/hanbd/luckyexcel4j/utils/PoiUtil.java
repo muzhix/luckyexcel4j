@@ -14,7 +14,7 @@ public class PoiUtil {
      *
      * @param columnWidth
      * @return
-     * @see {@link org.apache.poi.xssf.usermodel.XSSFSheet#getColumnWidthInPixels}
+     * @see {@link org.apache.poi.xssf.usermodel.XSSFSheet#getColumnWidthInPixels(int)}
      */
     public static Integer getColumnWidthPixel(Double columnWidth) {
         return (int) Math.round((columnWidth - 0.83) * 8 + 5);

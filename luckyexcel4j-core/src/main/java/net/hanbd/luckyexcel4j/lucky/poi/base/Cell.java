@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyle;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.CellFormatType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.*;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -67,54 +66,32 @@ public class Cell {
         /*
          * style
          */
-
         XSSFCellStyle cellStyle = cell.getCellStyle();
 
         CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
                 .type(CellFormatType.of(cell.getCellType())).build();
+        // TODO 原始值和显示值的赋值待优化
         cellValue.setValue(cell.getRawValue());
+        cellValue.setMonitor(cell.getRawValue());
         cellValue.setCellType(lsCellFormat);
         cellValue.setBackground(cellStyle.getFillBackgroundColorColor().getARGBHex());
 
         // font
         XSSFFont font = cellStyle.getFont();
-        cellValue.setFontsize((int) font.getFontHeight());
+        cellValue.setFontsize(font.getFontHeightInPoints());
         cellValue.setFontColor(font.getXSSFColor().getARGBHex());
-        cellValue.setFontFamily(font.getFontName());
-        cellValue.setBold(font.getBold() ? 1 : 0);
-        cellValue.setItalic(font.getItalic() ? 1 : 0);
-        cellValue.setCancelLine(font.getStrikeout() ? 1 : 0);
+        cellValue.setFontFamily(FontFamily.of(font.getFontName()));
+        cellValue.setBold(font.getBold());
+        cellValue.setItalic(font.getItalic());
+        cellValue.setCancelLine(font.getStrikeout());
 
         // horizontal and vertical
-        int ht = 0, vt = 0;
-        switch (cellStyle.getAlignment()) {
-            case LEFT:
-                ht = 1;
-                break;
-            case RIGHT:
-                ht = 2;
-                break;
-            default:
-                break;
-        }
-        switch (cellStyle.getVerticalAlignment()) {
-            case TOP:
-                vt = 1;
-                break;
-            case BOTTOM:
-                vt = 2;
-                break;
-            default:
-                break;
-        }
-        cellValue.setHorizontalType(ht);
-        cellValue.setVerticalType(vt);
-        cellValue.setTextBreak(cellStyle.getWrapText() ? 2 : 1);
-        // TODO optimize rotation
+        cellValue.setHorizontalType(CellHorizontalType.of(cellStyle.getAlignment()));
+        cellValue.setVerticalType(CellVerticalType.of(cellStyle.getVerticalAlignment()));
+        cellValue.setTextBreak(cellStyle.getWrapText() ? TextBreakType.LINE_WRAP : TextBreakType.OVERFLOW);
         short rotation = cellStyle.getRotation();
-        cellValue.setRotateText((int) rotation);
-        cellValue.setTextRotate(0);
+        cellValue.setRotateText(rotation);
 
         // border
         if (cellStyle.getCoreXf().getApplyBorder()) {
@@ -157,7 +134,7 @@ public class Cell {
                                             org.apache.poi.ss.usermodel.BorderStyle borderStyle,
                                             XSSFCellBorder.BorderSide borderSide) {
         return CellBorder.Style.builder()
-                .style(BorderStyle.valueOf(borderStyle).getStyle())
+                .style(BorderStyle.of(borderStyle).getStyle())
                 .color(cellStyle.getBorderColor(borderSide).getARGBHex()).build();
     }
 

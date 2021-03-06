@@ -9,10 +9,11 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import net.hanbd.luckyexcel4j.jackson.IntKeyMapToKeySetDeserializer;
 import net.hanbd.luckyexcel4j.jackson.IntSetToZeroValMapSerializer;
 import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderRangeType;
@@ -37,8 +38,20 @@ import java.util.*;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class SheetConfig {
+
+    /**
+     * new 对象,并对各字段初始化赋空值
+     */
+    public SheetConfig() {
+        this.merge = Maps.newHashMap();
+        this.borderInfos = Lists.newArrayList();
+        this.rowHeight = Maps.newHashMap();
+        this.columnWidth = Maps.newHashMap();
+        this.hiddenColumns = Sets.newHashSet();
+        this.hiddenRows = Sets.newHashSet();
+    }
+
     /**
      * 合并单元格信息.
      * <p>

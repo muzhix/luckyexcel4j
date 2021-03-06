@@ -3,6 +3,7 @@ package net.hanbd.luckyexcel4j.lucky.poi.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -36,6 +37,17 @@ public enum CellVerticalType {
     @JsonCreator
     public static CellVerticalType of(Integer type) {
         return TYPES.get(type);
+    }
+
+    public static CellVerticalType of(VerticalAlignment va) {
+        switch (va) {
+            case BOTTOM:
+                return CellVerticalType.BOTTOM;
+            case TOP:
+                return CellVerticalType.TOP;
+            default:
+                return CellVerticalType.CENTER;
+        }
     }
 
     @JsonValue

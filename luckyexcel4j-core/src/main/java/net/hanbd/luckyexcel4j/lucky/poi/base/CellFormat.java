@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.hanbd.luckyexcel4j.lucky.poi.enums.CellFormatType;
+import org.apache.poi.ss.usermodel.BuiltinFormats;
 
 /**
  * 单元格值格式
@@ -24,6 +25,8 @@ public class CellFormat {
     /**
      * Format格式的定义字符串
      * TODO 优化format的赋值问题
+     *
+     * @see BuiltinFormats#getBuiltinFormat(int)
      */
     @JsonProperty("fa")
     private String format;
@@ -36,6 +39,7 @@ public class CellFormat {
     /**
      * format 类型,TODO 使用接口实现或类继承实现
      */
+    @Deprecated
     static class Format {
         /**
          * 自动

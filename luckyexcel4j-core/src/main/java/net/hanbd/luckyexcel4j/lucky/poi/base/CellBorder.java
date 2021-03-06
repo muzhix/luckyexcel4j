@@ -18,7 +18,11 @@ public class CellBorder extends Border {
 
     private Value value;
 
+    /**
+     * 新建对象,并初始化相应值
+     */
     public CellBorder() {
+        this.rangeType = BorderRangeType.CELL;
         this.value = new Value();
     }
 

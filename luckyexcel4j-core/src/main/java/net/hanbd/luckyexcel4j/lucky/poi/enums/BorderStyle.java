@@ -102,6 +102,10 @@ public enum BorderStyle {
         return STYLES.get(Integer.valueOf(intStyle));
     }
 
+    public static BorderStyle of(org.apache.poi.ss.usermodel.BorderStyle poiStyle) {
+        return valueOf(poiStyle.name());
+    }
+
     @JsonValue
     public Integer getStyle() {
         return style;

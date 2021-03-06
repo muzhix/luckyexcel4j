@@ -3,6 +3,7 @@ package net.hanbd.luckyexcel4j.lucky.poi.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -36,6 +37,17 @@ public enum CellHorizontalType {
     @JsonCreator
     public static CellHorizontalType of(Integer type) {
         return TYPES.get(type);
+    }
+
+    public static CellHorizontalType of(HorizontalAlignment ha) {
+        switch (ha) {
+            case LEFT:
+                return CellHorizontalType.LEFT;
+            case RIGHT:
+                return CellHorizontalType.RIGHT;
+            default:
+                return CellHorizontalType.CENTER;
+        }
     }
 
     @JsonValue

@@ -13,5 +13,5 @@ public class Border {
     /**
      * 边框范围类型
      */
-    private BorderRangeType rangeType;
+    protected BorderRangeType rangeType;
 }

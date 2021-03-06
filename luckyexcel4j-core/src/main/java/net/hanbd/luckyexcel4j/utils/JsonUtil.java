@@ -19,6 +19,7 @@ import java.util.Map;
  * @author hanbd
  * @date 2020/09/03
  */
+@Deprecated
 public class JsonUtil {
     private JsonUtil() {
         throw new AssertionError();
@@ -31,7 +32,8 @@ public class JsonUtil {
      */
     public static class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
         @Override
-        public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator,
+                              SerializerProvider serializerProvider) throws IOException {
             String localDateTimeStr = localDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
             jsonGenerator.writeString(localDateTimeStr);
         }
@@ -53,7 +55,8 @@ public class JsonUtil {
      */
     public static class LocalDateSerializer extends JsonSerializer<LocalDate> {
         @Override
-        public void serialize(LocalDate localDate, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(LocalDate localDate, JsonGenerator jsonGenerator,
+                              SerializerProvider serializerProvider) throws IOException {
             String localDateStr = localDate.format(DateTimeFormatter.ISO_DATE);
             jsonGenerator.writeString(localDateStr);
         }
