@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.hanbd.luckyexcel4j.lucky.poi.enums.*;
+import net.hanbd.luckyexcel4j.utils.PoiUtil;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -14,6 +16,8 @@ import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCell;
 
 import javax.validation.constraints.Min;
+import java.text.DecimalFormat;
+import java.util.Objects;
 
 /**
  * @author hanbd
@@ -21,6 +25,7 @@ import javax.validation.constraints.Min;
  * href="https://mengshukeji.gitee.io/luckysheetdocs/zh/guide/cell.html#%E5%8D%95%E5%85%83%E6%A0%BC">
  * 单元格</a>
  */
+@Slf4j
 @Data
 @AllArgsConstructor
 public class Cell {
@@ -44,7 +49,9 @@ public class Cell {
 
     @JsonIgnore
     private final XSSFCell cell;
+    @JsonIgnore
     private final CTCell ctCell;
+    @JsonIgnore
     private final XSSFWorkbook workbook;
     @JsonIgnore
     private CellBorder cellBorder;
@@ -56,6 +63,7 @@ public class Cell {
 
         this.row = cell.getRowIndex();
         this.column = cell.getColumnIndex();
+        log.debug("row: {}, col: {}", row, column);
         this.value = generateValue();
     }
 
@@ -71,16 +79,25 @@ public class Cell {
         CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
                 .type(CellFormatType.of(cell.getCellType())).build();
+        log.debug("dataFormatString: {}", cellStyle.getDataFormatString());
+        log.debug("poi cellType: {}", cell.getCellType());
+        log.debug("lucky cellType: {}", CellFormatType.of(cell.getCellType()));
         // TODO 原始值和显示值的赋值待优化
-        cellValue.setValue(cell.getRawValue());
-        cellValue.setMonitor(cell.getRawValue());
+        setValueAndMonitor(cellValue);
         cellValue.setCellType(lsCellFormat);
-        cellValue.setBackground(cellStyle.getFillBackgroundColorColor().getARGBHex());
+        String bgColorHex = PoiUtil.getRgbHexStr(cellStyle.getFillBackgroundColorColor());
+        if (Objects.nonNull(bgColorHex)) {
+            cellValue.setBackground(bgColorHex);
+        }
 
         // font
         XSSFFont font = cellStyle.getFont();
         cellValue.setFontsize(font.getFontHeightInPoints());
-        cellValue.setFontColor(font.getXSSFColor().getARGBHex());
+        String fontColorHex = PoiUtil.getRgbHexStr(font.getXSSFColor());
+        if (Objects.nonNull(fontColorHex)) {
+            cellValue.setFontColor(fontColorHex);
+        }
+        log.debug("{} fontName: {}", cell.getAddress(), font.getFontName());
         cellValue.setFontFamily(FontFamily.of(font.getFontName()));
         cellValue.setBold(font.getBold());
         cellValue.setItalic(font.getItalic());
@@ -115,7 +132,7 @@ public class Cell {
                 borderValue.setLeft(genBorderStyle(cellStyle, borderLeft, XSSFCellBorder.BorderSide.LEFT));
             }
             if (borderRight != org.apache.poi.ss.usermodel.BorderStyle.NONE) {
-                borderValue.setTop(genBorderStyle(cellStyle, borderRight, XSSFCellBorder.BorderSide.RIGHT));
+                borderValue.setRight(genBorderStyle(cellStyle, borderRight, XSSFCellBorder.BorderSide.RIGHT));
             }
         }
 
@@ -133,10 +150,55 @@ public class Cell {
     private CellBorder.Style genBorderStyle(XSSFCellStyle cellStyle,
                                             org.apache.poi.ss.usermodel.BorderStyle borderStyle,
                                             XSSFCellBorder.BorderSide borderSide) {
-        return CellBorder.Style.builder()
-                .style(BorderStyle.of(borderStyle).getStyle())
-                .color(cellStyle.getBorderColor(borderSide).getARGBHex()).build();
+        String bdColorHex = PoiUtil.getRgbHexStr(cellStyle.getBorderColor(borderSide));
+        log.debug("border color: {}", bdColorHex);
+
+        CellBorder.Style style = new CellBorder.Style();
+        style.setStyle(BorderStyle.of(borderStyle).getStyle());
+        if (Objects.nonNull(bdColorHex)) {
+            style.setColor(bdColorHex);
+        }
+        return style;
     }
 
+    private static final DecimalFormat NUMERIC_FORMAT = new DecimalFormat("#.######");
 
+    public void setValueAndMonitor(CellValue cellValue) {
+        if (Objects.isNull(cell)) {
+            return;
+        }
+        String strVal = "";
+        switch (cell.getCellType()) {
+            case STRING:
+                strVal = cell.getStringCellValue();
+                break;
+            case NUMERIC:
+                strVal = NUMERIC_FORMAT.format(cell.getNumericCellValue());
+                break;
+            case BOOLEAN:
+                strVal = String.valueOf(cell.getBooleanCellValue());
+                break;
+            case FORMULA:
+                try {
+                    strVal = NUMERIC_FORMAT.format(cell.getNumericCellValue());
+                } catch (IllegalStateException e) {
+                    if (e.getMessage().contains("from a STRING cell")) {
+                        strVal = cell.getStringCellValue();
+                    } else if (e.getMessage().contains("from a ERROR formula cell")) {
+                        strVal = String.valueOf(cell.getErrorCellValue());
+                    }
+                } catch (Exception e) {
+                    log.error("获取FORMULA单元格内容出错, error: {}", e.getMessage());
+                    e.printStackTrace();
+                    strVal = cell.toString();
+                }
+            default:
+                break;
+        }
+        String monitor = strVal;
+
+        cellValue.setValue(strVal);
+        cellValue.setMonitor(monitor);
+    }
 }
+

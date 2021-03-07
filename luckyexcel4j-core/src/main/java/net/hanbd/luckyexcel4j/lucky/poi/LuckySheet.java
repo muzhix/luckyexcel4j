@@ -3,6 +3,7 @@ package net.hanbd.luckyexcel4j.lucky.poi;
 import cn.hutool.core.util.IdUtil;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.hanbd.luckyexcel4j.lucky.poi.base.*;
 import net.hanbd.luckyexcel4j.utils.PoiUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -12,7 +13,6 @@ import org.apache.poi.xssf.model.CalculationChain;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.*;
@@ -28,9 +28,11 @@ import static net.hanbd.luckyexcel4j.utils.PojoUtil.*;
 /**
  * @author hanbd
  */
+@Slf4j
 public class LuckySheet {
     @Getter
     private final XSSFSheet sheet;
+    private final CTWorksheet ctSheet;
     private final XSSFWorkbook workbook;
     private final StylesTable stylesTable;
     private final SharedStringsTable sharedStringsTable;
@@ -43,6 +45,7 @@ public class LuckySheet {
 
         this.sheet = sheet;
         this.workbook = this.sheet.getWorkbook();
+        ctSheet = sheet.getCTWorksheet();
 
         this.stylesTable = workbook.getStylesSource();
         this.sharedStringsTable = workbook.getSharedStringSource();
@@ -53,40 +56,51 @@ public class LuckySheet {
         // sheet基础信息
         sheetMeta.setName(sheet.getSheetName());
         sheetMeta.setIndex(IdUtil.fastSimpleUUID());
-        sheetMeta.setOrder(workbook.getSheetIndex(sheet));
-        // 关键值初始化
-        sheetMeta.setConfig(new SheetConfig());
-        sheetMeta.setCellData(Lists.newArrayList());
+        int sheetIdx = workbook.getSheetIndex(sheet);
+        sheetMeta.setOrder(sheetIdx);
+        sheetMeta.setHidden(workbook.isSheetHidden(sheetIdx));
 
         resolveSheetView();
         resolveTabColor();
+        resolveMergeCells();
         resolveColWidthAndRowHeightAndAddCell();
         // TODO resolve formulaRefList
         // TODO resolve calcChain (workbook.getCalculationChain())
-        resolveMergeCells();
+        // TODO resolve pivotTable
 
         return sheetMeta;
     }
 
     private void resolveSheetView() {
-        CTSheetViews sheetViews = sheet.getCTWorksheet().getSheetViews();
-        if (sheetViews.sizeOfSheetViewArray() <= 0) {
-            return;
-        }
-        CTSheetView sheetView = sheetViews.getSheetViewArray(0);
-
-        this.sheetMeta.setShowGridLines(sheetView.getShowGridLines());
-        this.sheetMeta.setSelected(sheetView.getTabSelected());
-        this.sheetMeta.setZoomRatio(getLongDefault(sheetView.getZoomScale(), 100L) / 100.0);
+        // apache中没有获取zoomScale的方法,这里使用更底层的api来获取
+        CTSheetView sheetView = getDefaultSheetView();
+        double zoomRatio = Objects.isNull(sheetView) ?
+                1.0 : getLongDefault(sheetView.getZoomScale(), 100L) / 100.0;
+        this.sheetMeta.setZoomRatio(zoomRatio);
+        this.sheetMeta.setShowGridLines(sheet.isDisplayGridlines());
+        this.sheetMeta.setSelected(sheet.isSelected());
         CellAddress activeCell = sheet.getActiveCell();
         Range range = new Range(activeCell.getRow(), activeCell.getColumn());
         this.sheetMeta.setSelectRangesSave(Lists.newArrayList(range));
     }
 
+    @Nullable
+    private CTSheetView getDefaultSheetView() {
+        if (!ctSheet.isSetSheetViews()) {
+            return null;
+        }
+        final CTSheetViews views = ctSheet.getSheetViews();
+        int sz = views.sizeOfSheetViewArray();
+        if (sz == 0) {
+            return null;
+        }
+        return views.getSheetViewArray(sz - 1);
+    }
+
     private void resolveTabColor() {
-        @Nullable XSSFColor tabColor = sheet.getTabColor();
-        if (Objects.nonNull(tabColor)) {
-            sheetMeta.setColor(tabColor.getARGBHex());
+        String tabColorHex = PoiUtil.getRgbHexStr(sheet.getTabColor());
+        if (Objects.nonNull(tabColorHex)) {
+            sheetMeta.setColor(tabColorHex);
         }
     }
 
@@ -95,13 +109,15 @@ public class LuckySheet {
      */
     private void resolveColWidthAndRowHeightAndAddCell() {
         // resolve default
-        int defaultHeightPoint = getIntDefault((int) sheet.getDefaultRowHeight(), 19);
-        sheetMeta.setDefaultColWidth(
-                PoiUtil.getColumnWidthPixel((double) sheet.getDefaultColumnWidth()));
-        sheetMeta.setDefaultRowHeight(PoiUtil.getRowHeightPixel((double) defaultHeightPoint));
+        int defaultHeightInPoint = getIntDefault((int) sheet.getDefaultRowHeightInPoints(), 19);
+        Integer defaultRowHeight = PoiUtil.getRowHeightPixel((double) defaultHeightInPoint);
+        sheetMeta.setDefaultColWidth(PoiUtil.getColumnWidthPixel((double) sheet.getDefaultColumnWidth()));
+        sheetMeta.setDefaultRowHeight(defaultRowHeight);
 
         SheetConfig sheetConfig = sheetMeta.getConfig();
         // resolve column information
+        Map<Integer, Integer> columnWidthMap = sheetConfig.getColumnWidth();
+        Set<Integer> hiddenColumns = sheetConfig.getHiddenColumns();
         List<CTCols> colsList = sheet.getCTWorksheet().getColsList();
         for (CTCols cols : colsList) {
             for (CTCol col : cols.getColList()) {
@@ -117,15 +133,15 @@ public class LuckySheet {
                     // columnlen
                     if (Objects.nonNull(widthNum)) {
                         // 添加列宽
-                        sheetConfig.getColumnWidth().put(i, PoiUtil.getColumnWidthPixel(widthNum));
+                        columnWidthMap.put(i, PoiUtil.getColumnWidthPixel(widthNum));
                     }
 
                     // colhidden
                     if (hidden) {
                         // 隐藏列
-                        sheetConfig.getHiddenColumns().add(i);
+                        hiddenColumns.add(i);
                         // 删除列宽
-                        sheetConfig.getColumnWidth().remove(i);
+//                        columnWidthMap.remove(i);
                     }
                 }
             }
@@ -135,27 +151,34 @@ public class LuckySheet {
         List<CTRow> rowList = sheet.getCTWorksheet().getSheetData().getRowList();
         Map<Integer, Integer> rowHeightMap = sheetConfig.getRowHeight();
         Set<Integer> hiddenRows = sheetConfig.getHiddenRows();
+        int colNum = 0;
         for (Row row : sheet) {
-            // 此处拿到的行值是0 based
             int rowNo = row.getRowNum();
-            // rowlen
-            rowHeightMap.put(rowNo, PoiUtil.getRowHeightPixel((double) row.getHeight()));
-            // rowhidden
-            if (row.getZeroHeight()) {
-                // 隐藏行
-                hiddenRows.add(rowNo);
-                // 删除行高
-                sheetConfig.getRowHeight().remove(rowNo);
+
+            int rh = PoiUtil.getRowHeightPixel((double) row.getHeightInPoints());
+            if (!Objects.equals(defaultRowHeight, rh)) {
+                rowHeightMap.put(rowNo, rh);
             }
+            if (row.getZeroHeight()) {
+                hiddenRows.add(rowNo);
+//                rowHeightMap.remove(rowNo);
+            }
+
             // cells
+            List<Border> borderInfos = sheetConfig.getBorderInfos();
             for (org.apache.poi.ss.usermodel.Cell cell : row) {
                 Cell lsCell = new Cell((XSSFCell) cell);
                 if (Objects.nonNull(lsCell.getCellBorder())) {
-                    sheetConfig.getBorderInfos().add(lsCell.getCellBorder());
+                    borderInfos.add(lsCell.getCellBorder());
                 }
                 sheetMeta.getCellData().add(lsCell);
             }
+
+            colNum = Math.max(colNum, row.getLastCellNum());
         }
+        // 设定行数和列数
+        sheetMeta.setRow(sheet.getLastRowNum() + 1);
+        sheetMeta.setColumn(colNum);
     }
 
     /**

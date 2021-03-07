@@ -2,8 +2,8 @@ package net.hanbd.luckyexcel4j.lucky.poi.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.Lists;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetView;
 
 import javax.validation.constraints.Max;
@@ -19,8 +19,15 @@ import java.util.List;
  * 初始化配置</a>
  */
 @Data
-@NoArgsConstructor
 public class SheetMeta {
+    /**
+     * new 对象,并对关键值初始化
+     */
+    public SheetMeta() {
+        this.config = new SheetConfig();
+        this.cellData = Lists.newArrayList();
+    }
+
     /**
      * 工作表名称
      */
@@ -70,10 +77,14 @@ public class SheetMeta {
     protected List<Range> selectRangesSave;
     /**
      * 左右滚动条位置
+     * <p>
+     * ECMA-376中无对应属性
      */
     protected Integer scrollLeft;
     /**
      * 上下滚动条位置
+     * <p>
+     * ECMA-376中无对应属性
      */
     protected Integer scrollTop;
     /**
@@ -101,6 +112,7 @@ public class SheetMeta {
      * 如果仅仅只是创建一个选区打开筛选功能，则配置这个范围即可，如果还需要进一步设置详细的筛选条件，
      * 则需要另外配置同级的 {@link SheetMeta#filter} 属性
      */
+    @JsonProperty("filter_select")
     protected Range filterSelect;
 
     /**
@@ -113,7 +125,8 @@ public class SheetMeta {
      * 条件格式
      * TODO
      */
-    protected ConditionFormat conditionFormatSave;
+    @JsonProperty("luckysheet_conditionformat_save")
+    protected List<ConditionFormat> conditionFormatSave;
     /**
      * 冻结行列设置 TODO 待确认具体类型
      */
@@ -127,6 +140,8 @@ public class SheetMeta {
     protected Object calcChain;
     /**
      * 此sheet页面的缩放比例, 为0~1之间的二位小数数字. eg: 1、0.1、0.56.  default 1
+     * <p>
+     * TODO apache poi默认的 zoomScale 是 10% ~ 400%, 该值的具体赋值范围需要再详细测试
      */
     @Min(0)
     @Max(1)

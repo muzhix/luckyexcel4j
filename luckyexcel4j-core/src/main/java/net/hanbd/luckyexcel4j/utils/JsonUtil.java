@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,10 @@ public class JsonUtil {
     }
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    static {
+        MAPPER.registerModule(new JavaTimeModule());
+    }
 
     /**
      * {@link LocalDateTime} 序列化

@@ -93,6 +93,10 @@ public enum FontFamily {
         return fontFamily;
     }
 
+    /**
+     * @param name 字体名
+     * @return 如果无对应字体, 默认返回 {@link FontFamily#ARIAL}
+     */
     public static FontFamily of(String name) {
         FontFamily fontFamily = NAMES.get(name);
         if (Objects.isNull(fontFamily)) {

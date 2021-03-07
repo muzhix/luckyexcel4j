@@ -62,6 +62,7 @@ public class CellBorder extends Border {
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     static class Style {

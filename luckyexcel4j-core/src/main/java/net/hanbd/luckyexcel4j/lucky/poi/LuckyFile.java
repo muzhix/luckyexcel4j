@@ -53,7 +53,7 @@ public class LuckyFile {
      *
      * @return
      */
-    private ExcelFileInfo getWorkbookInfo() {
+    public ExcelFileInfo getWorkbookInfo() {
         CoreProperties coreProperties = excel.getProperties().getCoreProperties();
         ExtendedProperties extProperties = excel.getProperties().getExtendedProperties();
         return ExcelFileInfo.builder()
@@ -67,14 +67,14 @@ public class LuckyFile {
                 .build();
     }
 
-    private List<SheetMeta> getSheets() {
+    public List<SheetMeta> getSheets() {
         int sheetNumbers = this.excel.getNumberOfSheets();
 
         List<SheetMeta> sheets = new ArrayList<>(sheetNumbers);
         for (int i = 0; i < sheetNumbers; i++) {
             XSSFSheet sheet = this.excel.getSheetAt(i);
             LuckySheet luckySheet = new LuckySheet(sheet);
-            sheets.add(luckySheet.getSheetMeta());
+            sheets.add(luckySheet.parse());
         }
 
         return sheets;

@@ -3,6 +3,7 @@ package net.hanbd.luckyexcel4j.lucky.poi.base;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CellValue {

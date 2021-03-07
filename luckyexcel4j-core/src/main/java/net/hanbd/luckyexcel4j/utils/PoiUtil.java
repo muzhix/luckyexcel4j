@@ -1,5 +1,11 @@
 package net.hanbd.luckyexcel4j.utils;
 
+import cn.hutool.core.util.HexUtil;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
+
 /**
  * @author hanbd
  */
@@ -22,5 +28,26 @@ public class PoiUtil {
 
     public static Integer getRowHeightPixel(Double rowHeightPoint) {
         return (int) Math.round(rowHeightPoint / POINT_TO_PIXEL_RATIO_BY_DPI);
+    }
+
+    /**
+     * 从{@link XSSFColor}中提取RGB hex颜色值. eg: {@code "#000000"}
+     *
+     * @param color
+     * @return rgb hex or null
+     */
+    @Nullable
+    public static String getRgbHexStr(@Nullable XSSFColor color) {
+        String hexColor = null;
+        if (Objects.nonNull(color)) {
+            if (Objects.nonNull(color.getRGB())) {
+                hexColor = "#" + HexUtil.encodeHexStr(color.getRGB());
+            } else {
+                // default black
+                // TODO 边框线颜色如果为黑色,那么color.getRGB == null,是否要赋默认值？
+//                hexColor = "#ffffff";
+            }
+        }
+        return hexColor;
     }
 }
