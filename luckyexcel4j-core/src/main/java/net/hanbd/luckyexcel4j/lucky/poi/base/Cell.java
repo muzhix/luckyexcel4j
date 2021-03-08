@@ -150,13 +150,11 @@ public class Cell {
     private CellBorder.Style genBorderStyle(XSSFCellStyle cellStyle,
                                             org.apache.poi.ss.usermodel.BorderStyle borderStyle,
                                             XSSFCellBorder.BorderSide borderSide) {
-        String bdColorHex = PoiUtil.getRgbHexStr(cellStyle.getBorderColor(borderSide));
-        log.debug("border color: {}", bdColorHex);
-
+        String bdColorStr = PoiUtil.getRgbStr(cellStyle.getBorderColor(borderSide));
         CellBorder.Style style = new CellBorder.Style();
         style.setStyle(BorderStyle.of(borderStyle).getStyle());
-        if (Objects.nonNull(bdColorHex)) {
-            style.setColor(bdColorHex);
+        if (Objects.nonNull(bdColorStr)) {
+            style.setColor(bdColorStr);
         }
         return style;
     }

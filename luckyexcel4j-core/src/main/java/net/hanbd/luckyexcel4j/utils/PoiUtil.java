@@ -1,6 +1,7 @@
 package net.hanbd.luckyexcel4j.utils;
 
 import cn.hutool.core.util.HexUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 
 import javax.annotation.Nullable;
@@ -9,6 +10,7 @@ import java.util.Objects;
 /**
  * @author hanbd
  */
+@Slf4j
 public class PoiUtil {
     /**
      * ratio, default 0.75 1in = 2.54cm = 25.4mm = 72pt = 6pc, pt = 1/72 In, px = 1/dpi In
@@ -49,5 +51,31 @@ public class PoiUtil {
             }
         }
         return hexColor;
+    }
+
+    /**
+     * eg: {@code "rgb(255, 0, 0)"}
+     *
+     * @param color
+     * @return rgb str or null
+     */
+    @Nullable
+    public static String getRgbStr(@Nullable XSSFColor color) {
+        if (Objects.isNull(color)) {
+            return null;
+        }
+        byte[] rgbBytes = color.getRGB();
+        if (Objects.isNull(rgbBytes) || rgbBytes.length != 3) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("rgb(");
+        for (byte rgbByte : rgbBytes) {
+            sb.append(rgbByte & 0xFF).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(")");
+        return sb.toString();
     }
 }
