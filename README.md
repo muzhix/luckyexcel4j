@@ -7,6 +7,9 @@ Luckyexcel4j，是[LuckySheet](https://gitee.com/mengshukeji/Luckysheet)导入�
 实现Excel文件与LuckySheet Json格式的互转
 
 ## DEMO
+1. 启动`luckyexcel4j-web`项目
+2. 访问[http://localhost:8080](http://localhost:8080)
+
 
 TODO
 

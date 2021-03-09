@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head lang="zh">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0" />
+    <title>Luckysheet</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/css/pluginsCss.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/plugins.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/css/luckysheet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet/dist/assets/iconfont/iconfont.css" />
+    <script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/js/plugin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/luckysheet.umd.js"></script>
+    <script src="./js/axios.min.js"></script>
+
+</head>
+
+<body>
+    <div id="luckysheet" style="margin:0px;padding:0px;position:absolute;width:100%;height:100%;left: 0px;top: 0px;">
+    </div>
+</body>
+
+<script>
+    var options = {
+        container: "luckysheet",
+        lang: "zh",
+        // data: [],
+        title: "demo",
+        userInfo: "demo-user"
+    }
+
+    // get file meta
+    axios.get('/file/meta').then(function (res) {
+        let fileMeta = res.data
+        options.title = res.data.info.name
+        options.userInfo = res.data.info.creator
+        options.data = fileMeta.sheets
+    }).then(function () {
+        luckysheet.create(options)
+    })
+
+</script>
+
+</html>
