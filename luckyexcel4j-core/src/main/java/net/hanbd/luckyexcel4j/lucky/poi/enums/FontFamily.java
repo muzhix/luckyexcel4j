@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Luckysheet 支持的字体类型 TODO 扩展字体支持
+ * Luckysheet 支持的字体类型
  *
  * @author hanbd
  * @see

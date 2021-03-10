@@ -7,10 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.CellHorizontalType;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.CellVerticalType;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.FontFamily;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.TextBreakType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 /**
@@ -87,13 +84,10 @@ public class CellValue {
     private MergeCell mergeCell;
     /**
      * 竖排文字,<b>参考微软excel中 开始->对齐方式->方向</b>
-     * <p>
-     * TODO 使用枚举
-     *
      * <p>Text rotation,0: 0、1: 45 、2: -45、3 Vertical text、4: 90 、5: -90
      */
     @JsonProperty("tr")
-    private Integer textRotate;
+    private TextRotateType textRotate;
     /**
      * 文字旋转角度,取值范围[0-180].
      * <p>
@@ -111,7 +105,11 @@ public class CellValue {
     @JsonProperty("tb")
     private TextBreakType textBreak;
     /**
-     * 原始值.可能为字符串类型,也可能为数字类型. TODO 值优化处理
+     * 原始值.可能为字符串类型,也可能为数字类型.
+     * <p>
+     * 理论上来说,设定好{@link CellValue#cellType}后,此处为string不影响显示
+     * <p>
+     * TODO boolean类型值可能还存在问题
      */
     @JsonProperty("v")
     private String value;

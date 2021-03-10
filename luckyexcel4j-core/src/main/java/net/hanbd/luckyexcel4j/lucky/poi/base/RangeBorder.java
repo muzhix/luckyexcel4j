@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderRangeType;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyle;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyleType;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderPosType;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,11 +38,11 @@ public class RangeBorder extends Border {
     /**
      * 边框线位置类型
      */
-    private BorderType borderType;
+    private BorderPosType borderType;
     /**
      * 边框线类型
      */
-    private BorderStyle style;
+    private BorderStyleType style;
     /**
      * 边框线颜色HEX. eg: #0000ff
      */

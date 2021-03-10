@@ -79,7 +79,6 @@ public class Cell {
         CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
                 .type(CellFormatType.of(cell.getCellType())).build();
-        // TODO 原始值和显示值的赋值待优化
         setValueAndMonitor(cellValue);
         cellValue.setCellType(lsCellFormat);
         String bgColorHex = PoiUtil.getRgbHexStr(cellStyle.getFillBackgroundColorColor());
@@ -149,7 +148,7 @@ public class Cell {
                                             XSSFCellBorder.BorderSide borderSide) {
         String bdColorStr = PoiUtil.getRgbStr(cellStyle.getBorderColor(borderSide));
         CellBorder.Style style = new CellBorder.Style();
-        style.setStyle(BorderStyle.of(borderStyle).getStyle());
+        style.setStyle(BorderStyleType.of(borderStyle).getStyle());
         if (Objects.nonNull(bdColorStr)) {
             style.setColor(bdColorStr);
         }

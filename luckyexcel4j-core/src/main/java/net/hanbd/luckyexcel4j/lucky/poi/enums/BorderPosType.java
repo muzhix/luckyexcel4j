@@ -3,7 +3,6 @@ package net.hanbd.luckyexcel4j.lucky.poi.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
  * href="https://mengshukeji.gitee.io/LuckysheetDocs/zh/guide/sheet.html#config-borderinfo">config-borderInfo</a>
  */
 @AllArgsConstructor
-public enum BorderType {
+public enum BorderPosType {
     /**
      * 左框线
      */
@@ -61,11 +60,11 @@ public enum BorderType {
     NONE("border-none");
 
     private final String type;
-    private static final Map<String, BorderType> TYPES = Arrays.stream(BorderType.values())
-            .collect(Collectors.toMap(BorderType::getType, Function.identity()));
+    private static final Map<String, BorderPosType> TYPES = Arrays.stream(BorderPosType.values())
+            .collect(Collectors.toMap(BorderPosType::getType, Function.identity()));
 
     @JsonCreator
-    public static BorderType of(String type) {
+    public static BorderPosType of(String type) {
         return TYPES.get(type);
     }
 

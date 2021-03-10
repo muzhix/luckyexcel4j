@@ -3,7 +3,7 @@ package net.hanbd.luckyexcel4j.lucky.poi.base;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderRangeType;
-import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyle;
+import net.hanbd.luckyexcel4j.lucky.poi.enums.BorderStyleType;
 
 /**
  * 单元格边框. {@link BorderRangeType#CELL}
@@ -67,7 +67,7 @@ public class CellBorder extends Border {
     @Builder
     static class Style {
         /**
-         * 边框线格式 {@link BorderStyle#getStyle}
+         * 边框线格式 {@link BorderStyleType#getStyle}
          */
         private Integer style;
         /**

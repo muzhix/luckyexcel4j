@@ -18,7 +18,8 @@ public class PoiUtil {
     public static final float POINT_TO_PIXEL_RATIO_BY_DPI = 72F / 96;
 
     /**
-     * 获得像素列宽 TODO 确认具体算法公式
+     * 获得像素列宽
+     * TODO 确认具体算法公式
      *
      * @param columnWidth
      * @return
@@ -46,8 +47,7 @@ public class PoiUtil {
                 hexColor = "#" + HexUtil.encodeHexStr(color.getRGB());
             } else {
                 // default black
-                // TODO 边框线颜色如果为黑色,那么color.getRGB == null,是否要赋默认值？
-//                hexColor = "#ffffff";
+                hexColor = "#ffffff";
             }
         }
         return hexColor;

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * href="https://mengshukeji.gitee.io/LuckysheetDocs/zh/guide/sheet.html#config-borderinfo">config-borderInfo</a>
  */
 @AllArgsConstructor
-public enum BorderStyle {
+public enum BorderStyleType {
     /**
      * 无
      */
@@ -90,19 +90,19 @@ public enum BorderStyle {
      */
     @Getter
     private final org.apache.poi.ss.usermodel.BorderStyle poiStyle;
-    private static final Map<Integer, BorderStyle> STYLES = Arrays.stream(BorderStyle.values())
-            .collect(Collectors.toMap(BorderStyle::getStyle, Function.identity()));
+    private static final Map<Integer, BorderStyleType> STYLES = Arrays.stream(BorderStyleType.values())
+            .collect(Collectors.toMap(BorderStyleType::getStyle, Function.identity()));
 
-    public static BorderStyle valueOf(org.apache.poi.ss.usermodel.BorderStyle poiStyle) {
+    public static BorderStyleType valueOf(org.apache.poi.ss.usermodel.BorderStyle poiStyle) {
         return valueOf(poiStyle.name());
     }
 
     @JsonCreator
-    public static BorderStyle of(String intStyle) {
+    public static BorderStyleType of(String intStyle) {
         return STYLES.get(Integer.valueOf(intStyle));
     }
 
-    public static BorderStyle of(org.apache.poi.ss.usermodel.BorderStyle poiStyle) {
+    public static BorderStyleType of(org.apache.poi.ss.usermodel.BorderStyle poiStyle) {
         return valueOf(poiStyle.name());
     }
 
