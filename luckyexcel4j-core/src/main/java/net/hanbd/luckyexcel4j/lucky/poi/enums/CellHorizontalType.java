@@ -3,10 +3,13 @@ package net.hanbd.luckyexcel4j.lucky.poi.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,12 +42,26 @@ public enum CellHorizontalType {
         return TYPES.get(type);
     }
 
-    public static CellHorizontalType of(HorizontalAlignment ha) {
+    public static CellHorizontalType of(HorizontalAlignment ha, @Nullable CellType cellType) {
         switch (ha) {
             case LEFT:
                 return CellHorizontalType.LEFT;
             case RIGHT:
                 return CellHorizontalType.RIGHT;
+            case GENERAL:
+                if (Objects.nonNull(cellType)) {
+                    switch (cellType) {
+                        case STRING:
+                            return CellHorizontalType.LEFT;
+                        case NUMERIC:
+                            return CellHorizontalType.RIGHT;
+                        case BOOLEAN:
+                        default:
+                            return CellHorizontalType.CENTER;
+                    }
+                } else {
+                    return CellHorizontalType.CENTER;
+                }
             default:
                 return CellHorizontalType.CENTER;
         }

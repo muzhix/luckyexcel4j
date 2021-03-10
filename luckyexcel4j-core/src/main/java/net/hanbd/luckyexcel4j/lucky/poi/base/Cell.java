@@ -79,9 +79,6 @@ public class Cell {
         CellFormat lsCellFormat = CellFormat.builder()
                 .format(cellStyle.getDataFormatString())
                 .type(CellFormatType.of(cell.getCellType())).build();
-        log.debug("dataFormatString: {}", cellStyle.getDataFormatString());
-        log.debug("poi cellType: {}", cell.getCellType());
-        log.debug("lucky cellType: {}", CellFormatType.of(cell.getCellType()));
         // TODO 原始值和显示值的赋值待优化
         setValueAndMonitor(cellValue);
         cellValue.setCellType(lsCellFormat);
@@ -104,7 +101,7 @@ public class Cell {
         cellValue.setCancelLine(font.getStrikeout());
 
         // horizontal and vertical
-        cellValue.setHorizontalType(CellHorizontalType.of(cellStyle.getAlignment()));
+        cellValue.setHorizontalType(CellHorizontalType.of(cellStyle.getAlignment(), cell.getCellType()));
         cellValue.setVerticalType(CellVerticalType.of(cellStyle.getVerticalAlignment()));
         cellValue.setTextBreak(cellStyle.getWrapText() ? TextBreakType.LINE_WRAP : TextBreakType.OVERFLOW);
         short rotation = cellStyle.getRotation();
